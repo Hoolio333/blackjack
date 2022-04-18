@@ -1,6 +1,8 @@
 const Card = require('./card')
+// const Blackjack = require('./blackjack')
 
 const numbers = {
+  A: 1,
   2: 2,
   3: 3,
   4: 4,
@@ -10,11 +12,11 @@ const numbers = {
   8: 8,
   9: 9,
   10: 10,
-  J: 11,
-  Q: 12,
-  K: 13,
-  A: 14
+  J: 10,
+  Q: 10,
+  K: 10
 }
+
 const suits = ['clubs', 'diamonds', 'hearts', 'spades']
 
 class CardDeck {
@@ -41,9 +43,9 @@ class CardDeck {
       //randomise the chance of getting a card 1/52, then 1/51
       const randomIndex = Math.floor(Math.random() * cardsRemaining)
       const cardToDeal = this.cardDeck[randomIndex]
-      console.log(cardToDeal)
+      // console.log(cardToDeal)
       this.cardDeck.splice(randomIndex, 1)
-      console.log(this.cardDeck)
+      // console.log(this.cardDeck)
       return cardToDeal
     }
     return false

@@ -29,6 +29,15 @@ describe('deck', () => {
     const result = deck.dealCard()
     expect(result).toEqual(false)
   })
+
+  it('check that 52 cards have been created, and three cards have been dealt', () => {
+    const deck = new CardDeck()
+    const cards = deck.createDeck()
+    deck.dealCard()
+    deck.dealCard()
+    deck.dealCard()
+    expect(cards.length).toEqual(49)
+  })
 })
 
 // function find() to check card exists
