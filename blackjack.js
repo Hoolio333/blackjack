@@ -1,8 +1,8 @@
 const Player = require('./player')
-const CardDeck = require('./carddeck')
+const CardDeck = require('./card_deck')
+const Dealer = require('./dealer')
 
 const cardValue = {
-  A: 1,
   2: 2,
   3: 3,
   4: 4,
@@ -12,15 +12,23 @@ const cardValue = {
   8: 8,
   9: 9,
   10: 10,
-  J: 10,
-  Q: 10,
-  K: 10
+  11: 10,
+  12: 10,
+  13: 10,
+  14: 1
 }
-
 class Blackjack {
-  constructor(cardDeck) {
-    this.cardDeck = cardDeck
+  constructor() {
     this.playerArray = []
+    this.deck
+    this.createDeck()
+    this.dealer
+  }
+
+  addDealer() {
+    const dealer = new Dealer()
+    this.dealer = dealer
+    return dealer
   }
 
   addPlayerToGame(id, playerName, wallet) {
@@ -29,34 +37,87 @@ class Blackjack {
     return player
   }
 
+  createDeck() {
+    this.deck = new CardDeck()
+    this.deck.createDeck()
+  }
+
+  dealACardToDealer() {
+    const card = this.deck.dealCard()
+    return this.dealer.hand.push(card)
+  }
+
   dealACardToAPlayerID(id) {
     for (let i = 0; i < this.playerArray.length; i++) {
       const player = this.playerArray[i]
       if (id === player.id) {
-        const card = CardDeck.dealACard()
-        player.hand.push(card)
-      } else {
-        return false
+        const card = this.deck.dealCard()
+        return player.hand.push(card)
       }
     }
+    return false
   }
 
   countScore(hand) {
-    //sum of cardArray
-    //if card array has an A (=1) and the sum + 10 is under 22, return sum = sum + 10 and sumLow = sum
-    //if card array has an A (=1) and the sum + 10 is over 22, return sumLow
-    //else return sum
+    let sum = 0
+    let aceIsEleven = false
+    let makeElevenAceOne = false
+    for (let i = 0; i < hand.length; i++) {
+      const numberOfCard = hand[i].number
+      const valueOfCard = cardValue[numberOfCard]
+      if (this.handHasAce(hand)) {
+        if (numberOfCard === 14 && !aceIsEleven) {
+          aceIsEleven = true
+          sum += 10
+        }
+        sum += valueOfCard
+        if (sum > 21 && !makeElevenAceOne) {
+          makeElevenAceOne = true
+          sum = sum - 10
+        }
+      } else sum += valueOfCard
+    }
+    return sum
+  }
+
+  handHasAce(hand) {
+    for (let i = 0; i < hand.length; i++) {
+      const numberOfCard = hand[i].number
+      if (numberOfCard === 14) {
+        return true
+      }
+    }
+    return false
   }
 
   isBust(hand) {
-    //if count score is 22 or above, return true
-    //else return false
+    if (this.countScore(hand) < 22) {
+      return false
+    }
+    return true
   }
 
   isTwentyOne(hand) {
-    //if countScore = 21 and cardArray.length = 2, return blackjack
-    //if countScore = 21, return twentyOne
-    //if countScore != 21, return false
+    if (this.countScore(hand) === 21) {
+      if (hand.length === 2) {
+        return Blackjack
+      } else return true
+    } else return false
+  }
+
+  doesPlayerWin(dealerHand, playerHand) {
+    if (this.isBust(playerHand)) {
+      return false
+    }
+    if (this.isBust(dealerHand)) {
+      return true
+    }
+    if (this.countScore(dealerHand) > this.countScore(playerHand)) {
+      return false
+    }
+    if (this.countScore(dealerHand) < this.countScore(playerHand)) {
+      return true
+    }
   }
 }
 
